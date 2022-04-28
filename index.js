@@ -4,6 +4,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const verify = require("jsonwebtoken/verify");
 
 // middleware
 
@@ -30,9 +32,19 @@ async function run() {
 
     app.post("/uploadproduct", async (req, res) => {
       const product = req.body;
-      // console.log(product);
-      const result = await productCollection.insertOne(product);
-      res.send({ success: "Product upload successfully" });
+      const tokenInfo = req.headers.authorization;
+      // console.log(tokenInfo);
+      const [email, accessToken] = tokenInfo.split(" ");
+      const decoded = verifyToken(accessToken);
+      // console.log(decoded);
+
+      if (email == decoded.email) {
+        // console.log(product);
+        const result = await productCollection.insertOne(product);
+        res.send({ success: "Product upload successfully" });
+      } else {
+        res.send({ success: "UnAuthorized Access" });
+      }
     });
   } finally {
     // await client.close();
@@ -41,6 +53,12 @@ async function run() {
 run().catch(console.dir);
 
 // create API
+
+app.post("/login", (req, res) => {
+  const email = req.body;
+  const token = jwt.sign(email, process.env.ACCESS_TOKEN_KEY);
+  res.send({ token });
+});
 
 app.get("/", (req, res) => {
   res.send("Hello This is good food server side");
@@ -51,3 +69,18 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log("Server Is Running", port);
 });
+
+// verify token
+
+function verifyToken(token) {
+  let email;
+  jwt.verify(token, process.env.ACCESS_TOKEN_KEY, function (err, decoded) {
+    if (err) {
+      email = "Invalid";
+    } else {
+      email = decoded;
+    }
+  });
+
+  return email;
+}
