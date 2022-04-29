@@ -65,7 +65,19 @@ async function run() {
 
     // order list
 
-    app.get("/orderList", async (req, res) => {});
+    app.get("/orderList", async (req, res) => {
+      const tokenInfo = req.headers.authorization;
+      // console.log(tokenInfo);
+      const [email, accessToken] = tokenInfo.split(" ");
+      const decoded = verifyToken(accessToken);
+      // console.log(decoded);
+      if (email == decoded.email) {
+        const orders = await orderCollection.find({ email: email }).toArray();
+        res.send(orders);
+      } else {
+        res.send({ success: "UnAuthorized Access" });
+      }
+    });
   } finally {
     // await client.close();
   }
