@@ -46,6 +46,13 @@ async function run() {
         res.send({ success: "UnAuthorized Access" });
       }
     });
+
+    // get products
+
+    app.get("/products", async (req, res) => {
+      const products = await productCollection.find({}).toArray();
+      res.send(products);
+    });
   } finally {
     // await client.close();
   }
