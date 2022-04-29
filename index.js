@@ -27,6 +27,7 @@ async function run() {
     console.log("user connected");
 
     const productCollection = client.db("goodFoods").collection("products");
+    const orderCollection = client.db("goodFoods").collection("orders");
 
     // upload product
 
@@ -53,6 +54,18 @@ async function run() {
       const products = await productCollection.find({}).toArray();
       res.send(products);
     });
+
+    // add orders
+
+    app.post("/addOrder", async (req, res) => {
+      const orderInfo = req.body;
+      const result = await orderCollection.insertOne(orderInfo);
+      res.send({ success: "order Completed successfully" });
+    });
+
+    // order list
+
+    app.get("/orderList", async (req, res) => {});
   } finally {
     // await client.close();
   }
