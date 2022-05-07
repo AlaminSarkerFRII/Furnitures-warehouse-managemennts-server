@@ -1,5 +1,6 @@
 const express = require("express");
-const { MongoClient, ObjectId, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const ObjectId = require("mongodb").ObjectId;
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
@@ -82,17 +83,26 @@ async function run() {
       // console.log(productId);
     });
 
+    // delete a product item
+
+    app.delete("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // add orders
 
-    app.post("/addOrder", async (req, res) => {
+    app.post("/MyItems", async (req, res) => {
       const orderInfo = req.body;
       const result = await orderCollection.insertOne(orderInfo);
       res.send({ success: "order Completed successfully" });
     });
 
-    // order list
+    // My Items list
 
-    app.get("/orderList", async (req, res) => {
+    app.get("/MyItems", async (req, res) => {
       const tokenInfo = req.headers.authorization;
       // console.log(tokenInfo);
       const [email, accessToken] = tokenInfo.split(" ");
