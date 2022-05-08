@@ -131,7 +131,7 @@ app.post("/login", (req, res) => {
 //listing ports
 
 app.get("/", (req, res) => {
-  res.send("Hello This is good food server side");
+  res.send("Server Side For  Furniture warehouse. ");
 });
 
 // port listening
