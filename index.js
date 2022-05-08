@@ -35,7 +35,6 @@ async function run() {
     app.post("/uploadproduct", async (req, res) => {
       const product = req.body;
       const tokenInfo = req.headers.authorization;
-      // console.log(tokenInfo);
       const [email, accessToken] = tokenInfo.split(" ");
       const decoded = verifyToken(accessToken);
       // console.log(decoded);
@@ -121,13 +120,15 @@ async function run() {
 }
 run().catch(console.dir);
 
-// create API
+// create API file
 
 app.post("/login", (req, res) => {
   const email = req.body;
   const token = jwt.sign(email, process.env.ACCESS_TOKEN_KEY);
   res.send({ token });
 });
+
+//listing ports
 
 app.get("/", (req, res) => {
   res.send("Hello This is good food server side");
